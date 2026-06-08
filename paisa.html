@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modern Currency Converter</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(-45deg,#6a11cb,#2575fc,#00c6ff,#7f00ff);
+    background-size:400% 400%;
+    animation:gradient 12s ease infinite;
+    padding:20px;
+}
+
+@keyframes gradient{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+}
+
+.converter{
+    width:100%;
+    max-width:450px;
+    padding:30px;
+    border-radius:25px;
+    backdrop-filter:blur(20px);
+    background:rgba(255,255,255,0.12);
+    border:1px solid rgba(255,255,255,0.2);
+    box-shadow:0 8px 32px rgba(0,0,0,.2);
+    color:white;
+}
+
+.title{
+    text-align:center;
+    font-size:28px;
+    font-weight:700;
+    margin-bottom:25px;
+}
+
+.input-box{
+    margin-bottom:20px;
+}
+
+.input-box label{
+    display:block;
+    margin-bottom:8px;
+    font-size:14px;
+}
+
+.input-box input{
+    width:100%;
+    padding:15px;
+    border:none;
+    border-radius:12px;
+    outline:none;
+    font-size:18px;
+}
+
+.currency-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+}
+
+.currency-select{
+    flex:1;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:rgba(255,255,255,.15);
+    padding:12px;
+    border-radius:12px;
+}
+
+.currency-select img{
+    width:35px;
+    height:25px;
+    border-radius:4px;
+    object-fit:cover;
+}
+
+.currency-select select{
+    width:100%;
+    border:none;
+    background:transparent;
+    color:white;
+    outline:none;
+    font-size:16px;
+    cursor:pointer;
+}
+
+.currency-select select option{
+    color:black;
+}
+
+.swap{
+    width:55px;
+    height:55px;
+    border:none;
+    border-radius:50%;
+    cursor:pointer;
+    font-size:22px;
+    background:white;
+    color:#2575fc;
+    transition:.3s;
+}
+
+.swap:hover{
+    transform:rotate(180deg);
+}
+
+.result{
+    margin-top:25px;
+    text-align:center;
+    padding:18px;
+    border-radius:15px;
+    background:rgba(255,255,255,.12);
+}
+
+.result h2{
+    font-size:26px;
+    margin-bottom:5px;
+}
+
+.result p{
+    opacity:.8;
+    font-size:14px;
+}
+
+.convert-btn{
+    width:100%;
+    padding:15px;
+    margin-top:20px;
+    border:none;
+    border-radius:14px;
+    cursor:pointer;
+    font-size:18px;
+    font-weight:600;
+    color:white;
+    background:linear-gradient(90deg,#00c6ff,#0072ff);
+    transition:.3s;
+}
+
+.convert-btn:hover{
+    transform:translateY(-3px);
+}
+
+.footer{
+    margin-top:15px;
+    text-align:center;
+    font-size:12px;
+    opacity:.8;
+}
+</style>
+</head>
+<body>
+
+<div class="converter">
+
+    <div class="title">
+        💱 Currency Converter
+    </div>
+
+    <div class="input-box">
+        <label>Amount</label>
+        <input type="number" id="amount" value="1">
+    </div>
+
+    <div class="currency-row">
+
+        <div class="currency-select">
+            <img id="fromFlag" src="">
+            <select id="fromCurrency"></select>
+        </div>
+
+        <button class="swap" id="swapBtn">⇄</button>
+
+        <div class="currency-select">
+            <img id="toFlag" src="">
+            <select id="toCurrency"></select>
+        </div>
+
+    </div>
+
+    <button class="convert-btn" onclick="convertCurrency()">
+        Convert Currency
+    </button>
+
+    <div class="result">
+        <h2 id="result">0.00</h2>
+        <p id="rateText">Exchange rate will appear here</p>
+    </div>
+
+    <div class="footer">
+        Live Exchange Rates
+    </div>
+<div class="f">tapan weds krinaaa</div>
+</div>
+
+<script>
+
+const currencies = {
+    USD:"US",
+    EUR:"EU",
+    GBP:"GB",
+    INR:"IN",
+    AUD:"AU",
+    CAD:"CA",
+    JPY:"JP",
+    CNY:"CN",
+    AED:"AE",
+    SGD:"SG",
+    CHF:"CH",
+    NZD:"NZ"
+};
+
+const fromCurrency = document.getElementById("fromCurrency");
+const toCurrency = document.getElementById("toCurrency");
+
+for(let code in currencies){
+    fromCurrency.innerHTML += `<option value="${code}">${code}</option>`;
+    toCurrency.innerHTML += `<option value="${code}">${code}</option>`;
+}
+
+fromCurrency.value="USD";
+toCurrency.value="INR";
+
+function updateFlag(selectId, flagId){
+    const code = document.getElementById(selectId).value;
+    const country = currencies[code];
+
+    document.getElementById(flagId).src =
+    `https://flagsapi.com/${country}/flat/64.png`;
+}
+
+updateFlag("fromCurrency","fromFlag");
+updateFlag("toCurrency","toFlag");
+
+fromCurrency.addEventListener("change",()=>{
+    updateFlag("fromCurrency","fromFlag");
+});
+
+toCurrency.addEventListener("change",()=>{
+    updateFlag("toCurrency","toFlag");
+});
+
+document.getElementById("swapBtn").addEventListener("click",()=>{
+
+    let temp = fromCurrency.value;
+    fromCurrency.value = toCurrency.value;
+    toCurrency.value = temp;
+
+    updateFlag("fromCurrency","fromFlag");
+    updateFlag("toCurrency","toFlag");
+
+    convertCurrency();
+});
+
+async function convertCurrency(){
+
+    const amount = document.getElementById("amount").value;
+
+    const from = fromCurrency.value;
+    const to = toCurrency.value;
+
+    try{
+
+        const response = await fetch(
+        `https://v6.exchangerate-api.com/v6/YOUR_API_KEY/latest/${from}`
+        );
+
+        const data = await response.json();
+
+        const rate = data.conversion_rates[to];
+
+        const result = (amount * rate).toFixed(2);
+
+        document.getElementById("result").innerText =
+        `${result} ${to}`;
+
+        document.getElementById("rateText").innerText =
+        `1 ${from} = ${rate} ${to}`;
+
+    }catch(error){
+
+        document.getElementById("result").innerText =
+        "Conversion Failed";
+
+        console.error(error);
+    }
+}
+
+convertCurrency();
+
+</script>
+
+</body>
+</html>
